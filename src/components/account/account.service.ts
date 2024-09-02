@@ -11,4 +11,6 @@ export class AccountService extends DolphServiceHandler<Dolph> {
   constructor() {
     super("accountservice");
   }
+
+  public async createAccount() {}
 }

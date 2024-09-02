@@ -3,18 +3,32 @@ import {
   Dolph,
   SuccessResponse,
   DRequest,
-  DResponse
+  DResponse,
+  TryCatchAsyncDec,
 } from "@dolphjs/dolph/common";
-import { Get, Route } from "@dolphjs/dolph/decorators";
+import { Get, Post, Route } from "@dolphjs/dolph/decorators";
+import { AccountService } from "./account.service";
 
-@Route('account')
+@Route("account")
 export class AccountController extends DolphControllerHandler<Dolph> {
+  private AccountService: AccountService;
   constructor() {
     super();
   }
 
   @Get("greet")
-  async greet (req: DRequest, res: DResponse) {
-    SuccessResponse({ res, body: { message: "you've reached the account endpoint." } });
+  async greet(req: DRequest, res: DResponse) {
+    SuccessResponse({
+      res,
+      body: { message: "you've reached the account endpoint." },
+    });
+  }
+
+  @Post("register")
+  @TryCatchAsyncDec
+  async register(req: DRequest, res: DResponse) {
+    const result = await this.AccountService.createAccount();
+
+    SuccessResponse({ res, body: result });
   }
 }
