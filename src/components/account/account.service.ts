@@ -5,6 +5,7 @@ import {
   NotAcceptableException,
   NotFoundException,
   ServiceUnavaliableException,
+  UnauthorizedException,
 } from "@dolphjs/dolph/common";
 import { InjectMongo } from "@dolphjs/dolph/decorators";
 import { AccountModel, IAccount, IOtp, OtpModel } from "./account.model";
@@ -269,7 +270,20 @@ ${account.fullname} here is your OTP: ${otp.otp}
     };
   }
 
-  private async getAccount(filter: {}): Promise<IAccount> {
+  public async refreshTokens(token: string, user: string) {
+    const refreshTokenDoc = await this.TokenService.verifyRefreshToken(token);
+
+    if (user !== refreshTokenDoc.sub)
+      throw new UnauthorizedException(
+        "Cannot refresh session using stolen tokens"
+      );
+
+    const tokens = await this.TokenService.generateToken(refreshTokenDoc.sub);
+
+    return tokens;
+  }
+
+  public async getAccount(filter: {}): Promise<IAccount> {
     return this.accountModel.findOne(filter);
   }
 

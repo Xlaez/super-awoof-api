@@ -83,3 +83,9 @@ export class VerifyOtpDto {
   @IsNotEmpty()
   otp: string;
 }
+
+export class RefreshTokenDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
+}

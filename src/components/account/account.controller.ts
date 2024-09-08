@@ -12,10 +12,12 @@ import { AccountService } from "./account.service";
 import {
   CreateAccountDto,
   LoginDto,
+  RefreshTokenDto,
   RequestOtpDto,
   VerifyAccountDto,
   VerifyOtpDto,
 } from "./account.dto";
+import { AuthShield } from "@/shared/shields";
 
 @Route("account")
 export class AccountController extends DolphControllerHandler<Dolph> {
@@ -78,5 +80,18 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const data: VerifyOtpDto = req.body as VerifyOtpDto;
     const result = await this.AccountService.verifyOtp(data);
     SuccessResponse({ res, body: result });
+  }
+
+  @Post("refresh-tokens")
+  @UseMiddleware(validateBodyMiddleware(RefreshTokenDto))
+  @UseMiddleware(AuthShield)
+  @TryCatchAsyncDec
+  async refreshTokens(req: DRequest, res: DResponse) {
+    const tokens = await this.AccountService.refreshTokens(
+      req.body.token,
+      req.payload.sub.toString()
+    );
+
+    SuccessResponse({ res, body: tokens });
   }
 }
