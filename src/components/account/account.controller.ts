@@ -7,7 +7,13 @@ import {
   TryCatchAsyncDec,
   validateBodyMiddleware,
 } from "@dolphjs/dolph/common";
-import { Get, Post, Route, UseMiddleware } from "@dolphjs/dolph/decorators";
+import {
+  Delete,
+  Get,
+  Post,
+  Route,
+  UseMiddleware,
+} from "@dolphjs/dolph/decorators";
 import { AccountService } from "./account.service";
 import {
   CreateAccountDto,
@@ -18,10 +24,15 @@ import {
   VerifyOtpDto,
 } from "./account.dto";
 import { AuthShield } from "@/shared/shields";
+import { sterilizeAccount } from "./account.sterializer";
+import { WalletService } from "../wallet/wallet.service";
+import { LoginMode } from "./account.enum";
+import { IAccount } from "./account.model";
 
 @Route("account")
 export class AccountController extends DolphControllerHandler<Dolph> {
   private AccountService: AccountService;
+  private WalletService: WalletService;
   constructor() {
     super();
   }
@@ -49,9 +60,20 @@ export class AccountController extends DolphControllerHandler<Dolph> {
   async verifyAccount(req: DRequest, res: DResponse) {
     const body: VerifyAccountDto = req.body as VerifyAccountDto;
     const data = await this.AccountService.verifyAccount(body);
+
+    const { balance, mno, paymentMethod } =
+      await this.WalletService.createWallet({
+        account: data.account._id.toString(),
+        paymentMethod:
+          data.account.loginMode === LoginMode.phone ? "mno" : "paystack",
+      });
+
     SuccessResponse({
       res,
-      body: { msg: "Account Verification Successful", data },
+      body: {
+        msg: "Account Verification Successful",
+        data: { ...data, coins: balance, mno, paymentMethod },
+      },
     });
   }
 
@@ -70,7 +92,15 @@ export class AccountController extends DolphControllerHandler<Dolph> {
   async login(req: DRequest, res: DResponse) {
     const data: LoginDto = req.body as LoginDto;
     const result = await this.AccountService.login(data);
-    SuccessResponse({ res, body: result });
+
+    const { balance, mno, paymentMethod } = await this.WalletService.getWallet(
+      result.account._id.toString()
+    );
+
+    SuccessResponse({
+      res,
+      body: { ...result, coins: balance, mno, paymentMethod },
+    });
   }
 
   @Post("verify-otp")
@@ -79,7 +109,15 @@ export class AccountController extends DolphControllerHandler<Dolph> {
   async verifyOtp(req: DRequest, res: DResponse) {
     const data: VerifyOtpDto = req.body as VerifyOtpDto;
     const result = await this.AccountService.verifyOtp(data);
-    SuccessResponse({ res, body: result });
+
+    const { balance, mno, paymentMethod } = await this.WalletService.getWallet(
+      result.account._id.toString()
+    );
+
+    SuccessResponse({
+      res,
+      body: { ...result, coins: balance, mno, paymentMethod },
+    });
   }
 
   @Post("refresh-tokens")
@@ -93,5 +131,52 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     );
 
     SuccessResponse({ res, body: tokens });
+  }
+
+  @Get("")
+  @UseMiddleware(AuthShield)
+  @TryCatchAsyncDec
+  async getProfile(req: DRequest, res: DResponse) {
+    const profile = await this.AccountService.getAccount({
+      _id: req.payload.sub.toString(),
+    });
+
+    const { balance, mno, paymentMethod } = await this.WalletService.getWallet(
+      profile._id.toString()
+    );
+
+    SuccessResponse({
+      res,
+      body: {
+        ...sterilizeAccount(profile),
+        coins: balance,
+        mno,
+        paymentMethod,
+      },
+    });
+  }
+
+  @Post("logout")
+  @UseMiddleware(AuthShield)
+  @TryCatchAsyncDec
+  async logout(req: DRequest, res: DResponse) {
+    // remove from token model
+    req.payload = {} as any;
+
+    SuccessResponse({
+      res,
+      body: { msg: "You have been logged out of the system" },
+    });
+  }
+
+  @Delete()
+  @UseMiddleware(AuthShield)
+  @TryCatchAsyncDec
+  async deleteAccount(req: DRequest, res: DResponse) {
+    // remove from token model
+    const account: string = req.payload.sub as string;
+    await this.WalletService.deleteWallet(account);
+    await this.AccountService.deleteAccount(account);
+    SuccessResponse({ res, body: { msg: "Account deletion successful" } });
   }
 }
