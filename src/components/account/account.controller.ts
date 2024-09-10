@@ -17,9 +17,12 @@ import {
 import { AccountService } from "./account.service";
 import {
   CreateAccountDto,
+  ForgetPasswordDto,
   LoginDto,
   RefreshTokenDto,
   RequestOtpDto,
+  ResetPasswordDto,
+  UpdatePasswordDto,
   VerifyAccountDto,
   VerifyOtpDto,
 } from "./account.dto";
@@ -84,6 +87,41 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const body: RequestOtpDto = req.body as RequestOtpDto;
     await this.AccountService.resendVerificationOtp(body);
     SuccessResponse({ res, body: { msg: "Otp sent" } });
+  }
+
+  @Post("request-password-reset")
+  @UseMiddleware(validateBodyMiddleware(ForgetPasswordDto))
+  @TryCatchAsyncDec
+  async requestPasswordReset(req: DRequest, res: DResponse) {
+    const body: ForgetPasswordDto = req.body as ForgetPasswordDto;
+
+    await this.AccountService.requestResetPasswordReset(body);
+
+    SuccessResponse({ res, body: { msg: "Otp sent" } });
+  }
+
+  @Post("password-reset")
+  @UseMiddleware(validateBodyMiddleware(ResetPasswordDto))
+  @TryCatchAsyncDec
+  async resetPassword(req: DRequest, res: DResponse) {
+    const body: ResetPasswordDto = req.body as ResetPasswordDto;
+
+    const result = await this.AccountService.resetPassword(body);
+
+    SuccessResponse({ res, body: result });
+  }
+
+  @Post("update/password")
+  @UseMiddleware(AuthShield)
+  @UseMiddleware(validateBodyMiddleware(UpdatePasswordDto))
+  @TryCatchAsyncDec
+  async updatePassword(req: DRequest, res: DResponse) {
+    const body: UpdatePasswordDto = req.body as UpdatePasswordDto;
+    const account: IAccount = req.payload.info as IAccount;
+
+    await this.AccountService.updatePassword(body, account);
+
+    SuccessResponse({ res, body: { msg: "Password updated successfully" } });
   }
 
   @Post("login")

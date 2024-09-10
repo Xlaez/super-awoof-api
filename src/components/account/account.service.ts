@@ -12,8 +12,11 @@ import { AccountModel, IAccount, IOtp, OtpModel } from "./account.model";
 import { Pagination } from "mongoose-paginate-ts";
 import {
   CreateAccountDto,
+  ForgetPasswordDto,
   LoginDto,
   RequestOtpDto,
+  ResetPasswordDto,
+  UpdatePasswordDto,
   VerifyAccountDto,
   VerifyOtpDto,
 } from "./account.dto";
@@ -281,6 +284,87 @@ ${account.fullname} here is your OTP: ${otp.otp}
     const tokens = await this.TokenService.generateToken(refreshTokenDoc.sub);
 
     return tokens;
+  }
+
+  public async requestResetPasswordReset(dto: ForgetPasswordDto) {
+    let account = await this.getAccount({ email: dto.email });
+
+    if (!account) throw new NotFoundException("Cannot find this account");
+
+    const otp = this.generateOtp(account);
+
+    account.isVerified = false;
+    await account.save();
+
+    return this.EmailService.sendPasswordResetMail(
+      account.email,
+      (await otp).otp
+    );
+  }
+
+  public async resetPassword(dto: ResetPasswordDto) {
+    const otp = await this.otpModel.findOne({
+      otp: dto.otp,
+      expires: { $gte: new Date() },
+    });
+
+    if (!otp)
+      throw new BadRequestException(
+        "otp has expired or is invalid, try requesting for another"
+      );
+
+    const accountByEmail = await this.getAccount({ email: dto.email });
+
+    let accountById = await this.getAccount({ _id: otp.accountId });
+
+    if (!accountByEmail && !accountById)
+      throw new NotFoundException("Cannot find the requested account");
+
+    if (accountByEmail.email !== accountById.email)
+      throw new NotAcceptableException(
+        "You do not have access to this account"
+      );
+
+    accountById.isVerified = true;
+    accountById.password = await hashWithBcrypt({
+      pureString: dto.password,
+      salt: 10,
+    });
+
+    await accountById.save();
+
+    await otp.deleteOne();
+
+    const { accessExpiration, accessToken, refreshExpiration, refreshToken } =
+      await this.TokenService.generateToken(accountById._id.toString());
+
+    return {
+      accessToken,
+      accessExpiration,
+      refreshToken,
+      refreshExpiration,
+      account: sterilizeAccount(accountById),
+    };
+  }
+
+  public async updatePassword(dto: UpdatePasswordDto, account: IAccount) {
+    let user = await this.getAccount({ email: account.email });
+
+    if (
+      !compareWithBcryptHash({
+        pureString: dto.oldPassword,
+        hashString: user.password,
+      })
+    )
+      throw new NotAcceptableException("Incorrect password");
+
+    user.password = await hashWithBcrypt({
+      pureString: dto.newPassword,
+      salt: 10,
+    });
+    await user.save();
+
+    return;
   }
 
   public async getAccount(filter: {}): Promise<IAccount> {

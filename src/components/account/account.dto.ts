@@ -89,3 +89,65 @@ export class RefreshTokenDto {
   @IsNotEmpty()
   token: string;
 }
+
+export class ForgetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  @MaxLength(20)
+  @IsOptional()
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/,
+    {
+      message:
+        "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character (@$!%?&)",
+    }
+  )
+  password: string;
+}
+
+export class UpdatePasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  @MaxLength(20)
+  @IsOptional()
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/,
+    {
+      message:
+        "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character (@$!%?&)",
+    }
+  )
+  oldPassword: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  @MaxLength(20)
+  @IsOptional()
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/,
+    {
+      message:
+        "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character (@$!%?&)",
+    }
+  )
+  newPassword: string;
+}

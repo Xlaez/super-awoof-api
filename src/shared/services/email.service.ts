@@ -62,4 +62,16 @@ export class EmailService extends DolphServiceHandler<Dolph> {
       }),
     });
   }
+
+  public async sendPasswordResetMail(to: string, otp: string) {
+    return this.send({
+      to,
+      subject: "Reset Password",
+      html: this.convertFromMjmlToHtml(
+        "../../templates/password_reset_email.mjml"
+      )({
+        otp,
+      }),
+    });
+  }
 }
