@@ -36,6 +36,8 @@ const envSchema = Joi.object()
     SMTP_SERVICE_PROD: Joi.string().description("SMTP prod service"),
     MONGO_URL: Joi.string().description("MONGO Connection string").required(),
     SMS_API: Joi.string().description("API for SMS service"),
+    MTN_CONSUMER_KEY: Joi.string().description("MTN Consumer Key"),
+    MTN_CONSUMER_SECRET: Joi.string().description("MTN Consumer Secret"),
   })
   .unknown();
 
@@ -74,10 +76,23 @@ export default {
         ? envVars.SMTP_PASS_DEV
         : envVars.SMTP_PASS_PROD,
   },
+  paystack: {
+    secretKey:
+      envVars.NODE_ENV === "development"
+        ? envVars.PAYSTACK_SECRET_KEY_DEV
+        : envVars.PAYSTACK_SECRET_KEY_PROD,
+    publicKey:
+      envVars.NODE_ENV === "production"
+        ? envVars.PAYSTACK_PUBLIC_KEY_DEV
+        : envVars.PAYSTACK_PUBLIC_KEY_PROD,
+  },
   mongo: {
     url: envVars.MONGO_URL,
   },
   sms: {
     api: envVars.SMS_API,
+  },
+  mnos: {
+    mtn: {},
   },
 };
