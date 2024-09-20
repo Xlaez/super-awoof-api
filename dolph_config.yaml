@@ -13,6 +13,6 @@ middlewares:
     allowedHeaders: 
 routing:
   base: '/api/v1'
-port: 8088
+# port: 8088
 jsonLimit: 5mb
 

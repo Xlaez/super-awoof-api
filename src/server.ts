@@ -13,4 +13,5 @@ const dolph = new DolphFactory([
   MnosComponent,
   SystemComponent,
 ]);
+
 dolph.start();
