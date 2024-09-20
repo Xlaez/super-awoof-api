@@ -13,7 +13,7 @@
     "dev:docker:stop": "docker-compose -f docker-compose-dev.yml down",
     "build": "node_modules/.bin/dolph build",
     "build:tsc": "tsc && tsc-alias",
-    "start": "node_modules/.bin/dolph start"
+    "start": "node_modules/.bin/dolph start",
     "clean": "rm -r app && rm -r logs"
   },
   "dependencies": {
