@@ -11,10 +11,8 @@
     "dev:start": "dolph watch",
     "dev:docker:start": "docker-compose -f docker-compose-dev.yml up",
     "dev:docker:stop": "docker-compose -f docker-compose-dev.yml down",
-    // "build": "dolph build",
     "build": "node_modules/.bin/dolph build",
     "build:tsc": "tsc && tsc-alias",
-    // "start": "dolph start",
     "start": "node_modules/.bin/dolph start"
     "clean": "rm -r app && rm -r logs"
   },
