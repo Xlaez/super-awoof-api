@@ -2,15 +2,24 @@ import { DolphServiceHandler } from "@dolphjs/dolph/classes";
 import { Dolph } from "@dolphjs/dolph/common";
 import { InjectMongo } from "@dolphjs/dolph/decorators";
 import { Model } from "mongoose";
-import { WalletModel, IWallet, IHistory, HistoryModel } from "./wallet.model";
+import {
+  WalletModel,
+  IWallet,
+  IHistory,
+  HistoryModel,
+  IWithdrawalRecord,
+  WithdrawalRecordModel,
+} from "./wallet.model";
 import { Pagination } from "mongoose-paginate-ts";
-import { HistoryDto } from "./wallet.dto";
+import { CreateRecordDto, HistoryDto } from "./wallet.dto";
 
 @InjectMongo("walletModel", WalletModel)
 @InjectMongo("historyModel", HistoryModel)
+@InjectMongo("recordModel", WithdrawalRecordModel)
 export class WalletService extends DolphServiceHandler<Dolph> {
   walletModel!: Pagination<IWallet>;
   historyModel!: Pagination<IHistory>;
+  recordModel!: Pagination<IWithdrawalRecord>;
 
   constructor() {
     super("walletservice");
@@ -42,5 +51,9 @@ export class WalletService extends DolphServiceHandler<Dolph> {
 
   async updateWallet(filter: any, updateObj: any) {
     return this.walletModel.findOneAndUpdate(filter, updateObj);
+  }
+
+  async createRecord(data: CreateRecordDto) {
+    return this.recordModel.create(data);
   }
 }

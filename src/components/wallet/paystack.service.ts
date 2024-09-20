@@ -108,7 +108,21 @@ export class PaystackService extends DolphServiceHandler<Dolph> {
 
     const request = await postRequest({ endpoint, headers, data });
 
-    console.log(request);
+    console.log(request.data);
+
+    return request.data;
+  }
+
+  public async confirmAccountNo(accountno: string, bankcode: string) {
+    const endpoint = `${this.url}/bank/resolve?account_number=${accountno}&bank_code=${bankcode}`;
+
+    const headers = {
+      Authorization: `Bearer ${this.secretKey}`,
+    };
+
+    const request = await getRequest({ endpoint, headers });
+
+    console.log(request.data);
 
     return request.data;
   }

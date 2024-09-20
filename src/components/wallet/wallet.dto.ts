@@ -33,3 +33,45 @@ export class VerifyPaymentDto {
   @IsNotEmpty()
   reference: string;
 }
+
+export class WithdrawDto {
+  @IsString()
+  @IsNotEmpty()
+  bankName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  accountNo: string;
+
+  @IsNumber()
+  amount: number;
+
+  @IsString()
+  @IsNotEmpty()
+  accountName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  bankCode: string;
+}
+
+export class CreateRecordDto {
+  @IsString()
+  @IsNotEmpty()
+  account: string;
+
+  @IsString()
+  @IsNotEmpty()
+  bankName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  accountName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  accountNo: string;
+
+  @Type(() => Number)
+  amount: number;
+}

@@ -10,6 +10,14 @@ export interface IWallet extends Document {
   paymentMethod: string;
 }
 
+export interface IWithdrawalRecord extends Document {
+  account: string;
+  bankName: string;
+  accountName: string;
+  accountNo: string;
+  amount: number;
+}
+
 export interface IHistory extends Document {
   account: string;
   paymentMethod: string;
@@ -73,8 +81,36 @@ const WalletSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
+const WithdrawalRecordSchema = new Schema(
+  {
+    account: {
+      type: Types.ObjectId,
+      ref: "accounts",
+      required: true,
+    },
+    bankName: {
+      type: String,
+      required: true,
+    },
+    accountName: {
+      type: String,
+      required: true,
+    },
+    accountNo: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+  },
+  { timestamps: true, versionKey: false }
+);
+
 WalletSchema.plugin(mongoosePagination);
 HistorySchema.plugin(mongoosePagination);
+WithdrawalRecordSchema.plugin(mongoosePagination);
 
 export const HistoryModel: Pagination<IHistory> = model<
   IHistory,
@@ -85,3 +121,8 @@ export const WalletModel: Pagination<IWallet> = model<
   IWallet,
   Pagination<IWallet>
 >("wallets", WalletSchema);
+
+export const WithdrawalRecordModel: Pagination<IWithdrawalRecord> = model<
+  IWithdrawalRecord,
+  Pagination<IWithdrawalRecord>
+>("records", WithdrawalRecordSchema);
