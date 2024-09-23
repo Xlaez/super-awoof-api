@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { ApiRequest } from "./types";
+import { DefaultException } from "@dolphjs/dolph/common/api/exceptions/default_exception.api";
 
 axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
@@ -47,8 +48,17 @@ export const postRequest = async ({ endpoint, headers, data }: ApiRequest) => {
 
     return response;
   } catch (e: any) {
-    console.error(`${e?.response.status} ${JSON.stringify(e.response.data)}`);
-    throw new Error(e);
+    console.error("Error occurred during POST request:", e);
+
+    if (axios.isAxiosError(e)) {
+      const message = e.response?.data?.message || "An error occurred";
+      const status = e.response?.status || 500;
+
+      throw new DefaultException(message, status);
+    } else {
+      // Handle other types of errors
+      throw new DefaultException("An unexpected error occurred", 500);
+    }
   }
 };
 
@@ -74,7 +84,7 @@ export const putRequest = async ({ endpoint, headers, data }: ApiRequest) => {
     return response;
   } catch (e: any) {
     console.error(`${e?.response.status} ${JSON.stringify(e.response.data)}`);
-    throw new Error(e);
+    throw new Error(e.message);
   }
 };
 
@@ -104,6 +114,6 @@ export const deleteRequest = async ({
     return response;
   } catch (e: any) {
     console.error(`${e.response.status} ${JSON.stringify(e.response.data)}`);
-    throw new Error(e);
+    throw new Error(e.message);
   }
 };

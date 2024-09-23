@@ -38,6 +38,8 @@ const envSchema = Joi.object()
     SMS_API: Joi.string().description("API for SMS service"),
     MTN_CONSUMER_KEY: Joi.string().description("MTN Consumer Key"),
     MTN_CONSUMER_SECRET: Joi.string().description("MTN Consumer Secret"),
+    CPID: Joi.string().description("Kitten router CPID").required(),
+    XToken: Joi.string().description("Kitten router XToken").required(),
   })
   .unknown();
 
@@ -93,6 +95,9 @@ export default {
     api: envVars.SMS_API,
   },
   mnos: {
-    mtn: {},
+    mtn: {
+      cpid: envVars.CPID,
+      xtoken: envVars.XToken,
+    },
   },
 };

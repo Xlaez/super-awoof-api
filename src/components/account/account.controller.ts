@@ -31,14 +31,13 @@ import { sterilizeAccount } from "./account.sterializer";
 import { WalletService } from "../wallet/wallet.service";
 import { LoginMode } from "./account.enum";
 import { IAccount } from "./account.model";
+import { MtnMnoService } from "../mnos/mtn/mtn.mnos.service";
 
 @Route("account")
 export class AccountController extends DolphControllerHandler<Dolph> {
   private AccountService: AccountService;
   private WalletService: WalletService;
-  constructor() {
-    super();
-  }
+  private MtnMnoService: MtnMnoService;
 
   @Get("greet")
   async greet(req: DRequest, res: DResponse) {
@@ -54,6 +53,9 @@ export class AccountController extends DolphControllerHandler<Dolph> {
   async register(req: DRequest, res: DResponse) {
     const body: CreateAccountDto = req.body as CreateAccountDto;
     await this.AccountService.createAccount(body);
+
+    await this.MtnMnoService.sendSms(req.body.phone, "Here is your OTP");
+
     SuccessResponse({ res, body: { msg: "Account Creation Successful" } });
   }
 
