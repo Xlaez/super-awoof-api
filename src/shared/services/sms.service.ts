@@ -33,7 +33,7 @@ export class SmsService extends DolphServiceHandler<Dolph> {
       return result;
     } catch (e: any) {
       console.error(e);
-      throw new Error(`Error: ${e}`);
+      throw e;
     }
   }
 }

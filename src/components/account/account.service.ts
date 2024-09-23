@@ -96,13 +96,13 @@ export class AccountService extends DolphServiceHandler<Dolph> {
           dto.fullname
         );
       } else {
-        this.SmsService.sendSms({
-          sender: "Super Awoof",
-          mobile: dto.phone,
-          content: `
-${dto.fullname} here is your OTP: ${otp.otp}        
-`,
-        });
+        //         this.SmsService.sendSms({
+        //           sender: "Super Awoof",
+        //           mobile: dto.phone,
+        //           content: `
+        // ${dto.fullname} here is your OTP: ${otp.otp}
+        // `,
+        //         });
       }
     } catch (e: any) {
       throw new Error(e);
