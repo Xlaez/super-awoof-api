@@ -14,7 +14,7 @@ export class MtnMnoService extends DolphServiceHandler<Dolph> {
   }
 
   async sendSms(phone: number, text: string) {
-    const endpoint = `${this.url}jsdp/sms/moresp/push?sender=4554&dest=${phone}&msgtext=${text}&pcode=MTN2`;
+    const endpoint = `${this.url}jsdp/sms/moresp/push?sender=20138&dest=${phone}&msgtext=${text}&pcode=MTN2`;
 
     const headers = {
       CPID: this.cpid,
