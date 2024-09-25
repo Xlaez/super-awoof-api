@@ -23,7 +23,7 @@ export class SystemService extends DolphServiceHandler<Dolph> {
   }
 
   async saveWinner(accountId: string, amount: number) {
-    await this.isEligibleToPlay(accountId);
+    // await this.isEligibleToPlay(accountId);
     return this.winnerModel.create({ account: accountId, amount });
   }
 
