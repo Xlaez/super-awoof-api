@@ -50,7 +50,7 @@ export class WalletService extends DolphServiceHandler<Dolph> {
   }
 
   async updateWallet(filter: any, updateObj: any) {
-    return this.walletModel.findOneAndUpdate(filter, updateObj);
+    return this.walletModel.findOneAndUpdate(filter, updateObj, { new: true });
   }
 
   async createRecord(data: CreateRecordDto) {
