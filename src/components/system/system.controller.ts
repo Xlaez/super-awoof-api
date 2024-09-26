@@ -14,13 +14,13 @@ import { SystemService } from "./system.service";
 import { GetWinnersDto, SaveWinnerDto } from "./system.dto";
 import { IWinner } from "./system.model";
 import { AuthShield } from "@/shared/shields";
-import { IAccount } from "../account/account.model";
-import { AccountService } from "../account/account.service";
+import { sterilizeAccount } from "../account/account.sterializer";
+import { WalletService } from "../wallet/wallet.service";
 
 @Route("system")
 export class SystemController extends DolphControllerHandler<Dolph> {
   private SystemService: SystemService;
-  private AccountService: AccountService;
+  private WalletService: WalletService;
   constructor() {
     super();
   }
@@ -71,12 +71,15 @@ export class SystemController extends DolphControllerHandler<Dolph> {
 
     await this.SystemService.saveWinner(account, req.body.amount);
 
-    await this.AccountService.updateAccount(
-      { _id: account },
-      { $inc: { coins: req.body.amount } }
+    const updatedAccount = await this.WalletService.updateWallet(
+      { account: account },
+      { $inc: { balance: req.body.amount } }
     );
 
-    SuccessResponse({ res, body: { msg: "You won!" } });
+    SuccessResponse({
+      res,
+      body: { msg: "You won!", coins: updatedAccount.balance },
+    });
   }
 
   @Get("greet")
