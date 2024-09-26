@@ -384,6 +384,10 @@ ${account.fullname} here is your OTP: ${otp.otp}
     return otp;
   }
 
+  public async updateAccount(filter: any, body: any) {
+    return this.accountModel.findOneAndUpdate(filter, body, { new: true });
+  }
+
   public async deleteAccount(accountId: string) {
     return this.accountModel.deleteOne({ _id: accountId });
   }
