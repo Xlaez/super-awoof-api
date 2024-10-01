@@ -19,6 +19,7 @@ import { getRequest, postRequest } from "@/shared/helpers/api_utils.helper";
 import { AccountService } from "../account/account.service";
 import { WalletService } from "./wallet.service";
 import { HistoryType } from "./wallet.enums";
+import { Subscription } from "../account/account.enum";
 
 export class PaystackService extends DolphServiceHandler<Dolph> {
   private readonly secretKey: string;
@@ -152,18 +153,49 @@ export class PaystackService extends DolphServiceHandler<Dolph> {
         if (!history)
           throw new InternalServerErrorException("Cannot record payment");
 
-        let wallet = await this.WalletService.getWallet(account._id.toString());
+        // let wallet = await this.WalletService.getWallet(account._id.toString());
 
-        if (!wallet) {
-          await this.WalletService.createWallet({
-            account: account._id.toString(),
-            paymentMethod: "paystack",
-            balance: amount,
-          });
+        // if (!wallet) {
+        //   await this.WalletService.createWallet({
+        //     account: account._id.toString(),
+        //     paymentMethod: "paystack",
+        //     balance: amount,
+        //   });
+        // }
+
+        // wallet.balance += amount;
+        // await wallet.save();
+
+        const currentDate = new Date();
+
+        if (amount === 100) {
+          account.subscription = Subscription.daily;
+          account.coins += 5;
+          const futureDate = new Date(
+            currentDate.getTime() + 24 * 60 * 60 * 1000
+          );
+          account.endOfSubscription = futureDate;
         }
 
-        wallet.balance += amount;
-        await wallet.save();
+        if (amount === 300) {
+          account.subscription = Subscription.weekly;
+          account.coins += 20;
+          const futureDate = new Date(
+            currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
+          );
+          account.endOfSubscription = futureDate;
+        }
+
+        if (amount === 500) {
+          account.subscription = Subscription.monthly;
+          account.coins += 50;
+          const futureDate = new Date(
+            currentDate.getTime() + 30 * 24 * 60 * 60 * 1000
+          );
+          account.endOfSubscription = futureDate;
+        }
+
+        account.save();
       } else if (
         data.status === "pending" ||
         data.status === "processing" ||

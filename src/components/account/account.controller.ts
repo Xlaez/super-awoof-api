@@ -180,7 +180,7 @@ export class AccountController extends DolphControllerHandler<Dolph> {
       _id: req.payload.sub.toString(),
     });
 
-    const { balance, mno, paymentMethod } = await this.WalletService.getWallet(
+    const { mno, paymentMethod } = await this.WalletService.getWallet(
       profile._id.toString()
     );
 
@@ -188,7 +188,6 @@ export class AccountController extends DolphControllerHandler<Dolph> {
       res,
       body: {
         ...sterilizeAccount(profile),
-        coins: balance,
         mno,
         paymentMethod,
       },
@@ -217,5 +216,18 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     await this.WalletService.deleteWallet(account);
     await this.AccountService.deleteAccount(account);
     SuccessResponse({ res, body: { msg: "Account deletion successful" } });
+  }
+
+  @Post("reduce-coins/:coins")
+  @UseMiddleware(AuthShield)
+  @TryCatchAsyncDec
+  async reduceCoins(req: DRequest, res: DResponse) {
+    const account = req.payload.info as IAccount;
+    const coins = req.params.coins;
+    await this.AccountService.updateAccount(
+      { email: account.email },
+      { $inc: { coins: -coins } }
+    );
+    SuccessResponse({ res, body: { msg: "Coins deducted" } });
   }
 }
