@@ -1,14 +1,18 @@
 import { Model, Types } from "mongoose";
 import { Schema, Document, model } from "mongoose";
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts";
+import { Subscription, subscription } from "./account.enum";
 
 export interface IAccount extends Document {
   email: string;
   phone: string;
+  coins: number;
   fullname: string;
   password: string;
   loginMode: string;
   isVerified: boolean;
+  subscription: string;
+  endOfSubscription: Date;
 }
 
 const AccountSchema = new Schema(
@@ -36,6 +40,18 @@ const AccountSchema = new Schema(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    coins: {
+      type: Number,
+      default: 0,
+    },
+    subscription: {
+      type: String,
+      enum: subscription,
+      default: Subscription.none,
+    },
+    endOfSubscription: {
+      type: Date,
     },
   },
   { timestamps: true, versionKey: false }
@@ -73,6 +89,7 @@ const OtpSchema = new Schema(
 OtpSchema.index({ otp: 1 }, { background: true });
 AccountSchema.index({ phone: 1 }, { background: true });
 AccountSchema.index({ email: 1 }, { background: true });
+AccountSchema.index({ subscription: 1 }, { background: true });
 
 export const OtpModel: Model<IOtp> = model<IOtp>("otps", OtpSchema);
 

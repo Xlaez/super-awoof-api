@@ -66,18 +66,17 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const body: VerifyAccountDto = req.body as VerifyAccountDto;
     const data = await this.AccountService.verifyAccount(body);
 
-    const { balance, mno, paymentMethod } =
-      await this.WalletService.createWallet({
-        account: data.account._id.toString(),
-        paymentMethod:
-          data.account.loginMode === LoginMode.phone ? "mno" : "paystack",
-      });
+    const { mno, paymentMethod } = await this.WalletService.createWallet({
+      account: data.account._id.toString(),
+      paymentMethod:
+        data.account.loginMode === LoginMode.phone ? "mno" : "paystack",
+    });
 
     SuccessResponse({
       res,
       body: {
         msg: "Account Verification Successful",
-        data: { ...data, coins: balance, mno, paymentMethod },
+        data: { ...data, mno, paymentMethod },
       },
     });
   }
@@ -133,13 +132,13 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const data: LoginDto = req.body as LoginDto;
     const result = await this.AccountService.login(data);
 
-    const { balance, mno, paymentMethod } = await this.WalletService.getWallet(
+    const { mno, paymentMethod } = await this.WalletService.getWallet(
       result.account._id.toString()
     );
 
     SuccessResponse({
       res,
-      body: { ...result, coins: balance, mno, paymentMethod },
+      body: { ...result, mno, paymentMethod },
     });
   }
 
@@ -150,13 +149,13 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const data: VerifyOtpDto = req.body as VerifyOtpDto;
     const result = await this.AccountService.verifyOtp(data);
 
-    const { balance, mno, paymentMethod } = await this.WalletService.getWallet(
+    const { mno, paymentMethod } = await this.WalletService.getWallet(
       result.account._id.toString()
     );
 
     SuccessResponse({
       res,
-      body: { ...result, coins: balance, mno, paymentMethod },
+      body: { ...result, mno, paymentMethod },
     });
   }
 

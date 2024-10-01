@@ -63,6 +63,27 @@ export class EmailService extends DolphServiceHandler<Dolph> {
     });
   }
 
+  public async sendEmailToIllumi8Mail(
+    from: string,
+    title: string,
+    body: string,
+    descr?: string
+  ) {
+    return this.send({
+      to: envConfigs.app.email,
+      subject: title,
+      html: `<html>
+  <body>
+    <h2> New message from ${from}:</h2>
+    <br/>
+    <strong>Description: ${descr}</strong>
+    <p>Body: ${body}</p>
+  </body>
+</html>
+`,
+    });
+  }
+
   public async sendPasswordResetMail(to: string, otp: string) {
     return this.send({
       to,

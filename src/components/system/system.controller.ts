@@ -11,16 +11,19 @@ import {
 } from "@dolphjs/dolph/common";
 import { Get, Post, Route, UseMiddleware } from "@dolphjs/dolph/decorators";
 import { SystemService } from "./system.service";
-import { GetWinnersDto, SaveWinnerDto } from "./system.dto";
+import { EmailDto, GetWinnersDto, SaveWinnerDto } from "./system.dto";
 import { IWinner } from "./system.model";
 import { AuthShield } from "@/shared/shields";
 import { sterilizeAccount } from "../account/account.sterializer";
 import { WalletService } from "../wallet/wallet.service";
+import { EmailService } from "@/shared/services/email.service";
+import { IAccount } from "../account/account.model";
 
 @Route("system")
 export class SystemController extends DolphControllerHandler<Dolph> {
   private SystemService: SystemService;
   private WalletService: WalletService;
+  private EmailService: EmailService;
   constructor() {
     super();
   }
@@ -71,22 +74,33 @@ export class SystemController extends DolphControllerHandler<Dolph> {
 
     await this.SystemService.saveWinner(account, req.body.amount);
 
-    const updatedAccount = await this.WalletService.updateWallet(
-      { account: account },
-      { $inc: { balance: req.body.amount } }
-    );
+    // const updatedAccount = await this.WalletService.updateWallet(
+    //   { account: account },
+    //   { $inc: { balance: req.body.amount } }
+    // );
 
     SuccessResponse({
       res,
-      body: { msg: "You won!", coins: updatedAccount.balance },
+      body: { msg: "You won!" },
     });
   }
 
-  @Get("greet")
-  async greet(req: DRequest, res: DResponse) {
-    SuccessResponse({
-      res,
-      body: { message: "you've reached the system endpoint." },
-    });
+  @Post("email-send")
+  @UseMiddleware(AuthShield)
+  @UseMiddleware(validateBodyMiddleware(EmailDto))
+  @TryCatchAsyncDec
+  async sendEmail(req: DRequest, res: DResponse) {
+    const { body, descr, title } = req.body as EmailDto;
+
+    const account: IAccount = req.payload.info as IAccount;
+
+    await this.EmailService.sendEmailToIllumi8Mail(
+      account.email,
+      title,
+      body,
+      descr
+    );
+
+    SuccessResponse({ res, body: { msg: "Email Sent successfully" } });
   }
 }

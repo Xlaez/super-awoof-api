@@ -1,4 +1,10 @@
-import { IsIn, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import {
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
 
 export class GetWinnersDto {
   @IsString()
@@ -10,4 +16,19 @@ export class GetWinnersDto {
 export class SaveWinnerDto {
   @IsNumber()
   amount: number;
+}
+
+export class EmailDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  descr: string;
+
+  @IsString()
+  @IsNotEmpty()
+  body: string;
 }

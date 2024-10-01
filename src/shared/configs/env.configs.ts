@@ -40,6 +40,9 @@ const envSchema = Joi.object()
     MTN_CONSUMER_SECRET: Joi.string().description("MTN Consumer Secret"),
     CPID: Joi.string().description("Kitten router CPID").required(),
     XToken: Joi.string().description("Kitten router XToken").required(),
+    APP_EMAIL: Joi.string()
+      .description("App Email")
+      .default("Flairtechhq@gmail.com"),
   })
   .unknown();
 
@@ -99,5 +102,8 @@ export default {
       cpid: envVars.CPID,
       xtoken: envVars.XToken,
     },
+  },
+  app: {
+    email: envVars.APP_EMAIL,
   },
 };

@@ -384,6 +384,17 @@ ${account.fullname} here is your OTP: ${otp.otp}
     return otp;
   }
 
+  public async getAccountByPhone(phone: string) {
+    const account = await this.accountModel.findOne({ phone });
+
+    if (!account)
+      throw new NotFoundException(
+        "An account with this number cannot be found"
+      );
+
+    return account;
+  }
+
   public async updateAccount(filter: any, body: any) {
     return this.accountModel.findOneAndUpdate(filter, body, { new: true });
   }
