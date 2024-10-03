@@ -34,7 +34,7 @@ export class SystemController extends DolphControllerHandler<Dolph> {
   async algoLevel(req: DRequest, res: DResponse) {
     const result = await this.SystemService.algoLevel();
 
-    SuccessResponse({ res, body: { msg: "hard" } });
+    SuccessResponse({ res, body: { data: result } });
   }
 
   @Get("winners")
