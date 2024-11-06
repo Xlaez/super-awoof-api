@@ -213,6 +213,6 @@ export class PaystackService extends DolphServiceHandler<Dolph> {
       return "success";
     }
 
-    throw new NotFoundException("Account not found");
+    throw new NotFoundException("Payment unsuccessful.");
   }
 }
