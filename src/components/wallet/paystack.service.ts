@@ -153,19 +153,6 @@ export class PaystackService extends DolphServiceHandler<Dolph> {
         if (!history)
           throw new InternalServerErrorException("Cannot record payment");
 
-        // let wallet = await this.WalletService.getWallet(account._id.toString());
-
-        // if (!wallet) {
-        //   await this.WalletService.createWallet({
-        //     account: account._id.toString(),
-        //     paymentMethod: "paystack",
-        //     balance: amount,
-        //   });
-        // }
-
-        // wallet.balance += amount;
-        // await wallet.save();
-
         const currentDate = new Date();
 
         if (amount === 100) {
