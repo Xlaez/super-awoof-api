@@ -251,7 +251,7 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     if (parseFloat(coins) >= 0) {
       await this.AccountService.updateAccount(
         { email: account.email },
-        { $inc: { coins: parseFloat(coins) } }
+        { $set: { coins: parseFloat(coins) } }
       );
     }
     SuccessResponse({ res, body: { msg: "Coins updated" } });
