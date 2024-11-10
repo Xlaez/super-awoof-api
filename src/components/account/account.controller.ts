@@ -224,10 +224,20 @@ export class AccountController extends DolphControllerHandler<Dolph> {
   async reduceCoins(req: DRequest, res: DResponse) {
     const account = req.payload.info as IAccount;
     const coins = req.params.coins;
-    await this.AccountService.updateAccount(
-      { email: account.email },
-      { $inc: { coins: -coins } }
-    );
+
+    if (account.coins !== 0) {
+      if (account.coins - parseFloat(coins) < 0) {
+        await this.AccountService.updateAccount(
+          { email: account.email },
+          { $inc: { coins: 0 } }
+        );
+      }
+
+      await this.AccountService.updateAccount(
+        { email: account.email },
+        { $inc: { coins: -coins } }
+      );
+    }
     SuccessResponse({ res, body: { msg: "Coins deducted" } });
   }
 }
