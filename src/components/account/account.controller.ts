@@ -240,4 +240,20 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     }
     SuccessResponse({ res, body: { msg: "Coins deducted" } });
   }
+
+  @Post("update-coins/:coins")
+  @UseMiddleware(AuthShield)
+  @TryCatchAsyncDec
+  async updateCoins(req: DRequest, res: DResponse) {
+    const account = req.payload.info as IAccount;
+    const coins = req.params.coins;
+
+    if (parseFloat(coins) >= 0) {
+      await this.AccountService.updateAccount(
+        { email: account.email },
+        { $inc: { coins: parseFloat(coins) } }
+      );
+    }
+    SuccessResponse({ res, body: { msg: "Coins updated" } });
+  }
 }
