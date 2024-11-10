@@ -155,32 +155,40 @@ export class PaystackService extends DolphServiceHandler<Dolph> {
 
         const currentDate = new Date();
 
-        if (amount === 100) {
-          account.subscription = Subscription.daily;
-          account.coins += 5;
-          const futureDate = new Date(
-            currentDate.getTime() + 24 * 60 * 60 * 1000
-          );
-          account.endOfSubscription = futureDate;
-        }
+        const coins = Math.round(amount / 25);
 
-        if (amount === 300) {
-          account.subscription = Subscription.weekly;
-          account.coins += 20;
-          const futureDate = new Date(
-            currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
-          );
-          account.endOfSubscription = futureDate;
-        }
+        account.coins += coins;
 
-        if (amount === 500) {
-          account.subscription = Subscription.monthly;
-          account.coins += 50;
-          const futureDate = new Date(
-            currentDate.getTime() + 30 * 24 * 60 * 60 * 1000
-          );
-          account.endOfSubscription = futureDate;
-        }
+        /**
+         * The commented code below is for mno subscription calculation
+         */
+
+        // if (amount === 100) {
+        //   account.subscription = Subscription.daily;
+        //   account.coins += 5;
+        //   const futureDate = new Date(
+        //     currentDate.getTime() + 24 * 60 * 60 * 1000
+        //   );
+        //   account.endOfSubscription = futureDate;
+        // }
+
+        // if (amount === 300) {
+        //   account.subscription = Subscription.weekly;
+        //   account.coins += 20;
+        //   const futureDate = new Date(
+        //     currentDate.getTime() + 7 * 24 * 60 * 60 * 1000
+        //   );
+        //   account.endOfSubscription = futureDate;
+        // }
+
+        // if (amount === 500) {
+        //   account.subscription = Subscription.monthly;
+        //   account.coins += 50;
+        //   const futureDate = new Date(
+        //     currentDate.getTime() + 30 * 24 * 60 * 60 * 1000
+        //   );
+        //   account.endOfSubscription = futureDate;
+        // }
 
         account.save();
       } else if (
