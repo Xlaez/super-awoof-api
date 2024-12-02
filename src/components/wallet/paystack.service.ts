@@ -7,7 +7,7 @@ import {
   NotAcceptableException,
   NotFoundException,
 } from "@dolphjs/dolph/common";
-import { InitSuccessResponse } from "./types";
+import { InitSuccessResponse, IPaystackCreateCustomer } from "./types";
 import {
   ICreateRecipient,
   IInitPaystackPayment,
@@ -95,7 +95,7 @@ export class PaystackService extends DolphServiceHandler<Dolph> {
 
     const request = await postRequest({ endpoint, headers, data });
 
-    console.log(request);
+    console.log(request.data);
 
     return request.data;
   }
@@ -112,6 +112,42 @@ export class PaystackService extends DolphServiceHandler<Dolph> {
     console.log(request.data);
 
     return request.data;
+  }
+
+  public async createCustomer(data: IPaystackCreateCustomer) {
+    const endpoint = `${this.url}/customer`;
+
+    const headers = {
+      Authorization: `Bearer ${this.secretKey}`,
+    };
+
+    const request = await postRequest({ endpoint, headers, data });
+
+    console.log(request.data);
+
+    return request.data;
+  }
+
+  public async fetchCustomer(emailOrCode: string) {
+    const endpoint = `${this.url}/customer/${emailOrCode}`;
+
+    const headers = {
+      Authorization: `Bearer ${this.secretKey}`,
+    };
+
+    const request = await getRequest({ endpoint, headers });
+
+    console.log(request.data);
+
+    return request.data;
+  }
+
+  public async withdraw() {
+    const endpoint = `${this.url}/`;
+
+    const headers = {
+      Authorization: `Bearer ${this.secretKey}`,
+    };
   }
 
   public async confirmAccountNo(accountno: string, bankcode: string) {

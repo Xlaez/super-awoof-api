@@ -7,6 +7,7 @@ import {
   validateBodyMiddleware,
   TryCatchAsyncDec,
   validateParamMiddleware,
+  BadRequestException,
 } from "@dolphjs/dolph/common";
 import {
   Get,
@@ -63,10 +64,17 @@ export class WalletController extends DolphControllerHandler<Dolph> {
     const account: IAccount = req.payload.info;
     const body: WithdrawDto = req.body as WithdrawDto;
 
+    const wallet = await this.WalletService.getWallet(account.id);
+
+    if (wallet.balance < body.amount)
+      throw new BadRequestException(
+        "Cannot withdraw more than what is your wallet"
+      );
+
     const result = await this.PaystackService.createRecipient({
       account_number: body.accountNo,
       currency: "NGN",
-      name: account.fullname,
+      name: body.bankName,
       type: "nuban",
       bank_code: body.bankCode,
     });
@@ -75,8 +83,8 @@ export class WalletController extends DolphControllerHandler<Dolph> {
 
     const tranferData: ITransferToRecipient = {
       amount: body.amount * 100,
-      reason: "Payment for winning the super-awoof jackpot!",
-      recipient: result.data._id,
+      reason: "Super-Awoof withdrawal",
+      recipient: result.data.recipient_code,
       source: "balance",
       reference,
     };
