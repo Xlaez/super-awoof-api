@@ -30,7 +30,7 @@ export class SystemService extends DolphServiceHandler<Dolph> {
 
     await this.walletService.updateWallet(
       { account: accountId },
-      { balance: { $inc: { balance: amount } } }
+      { $inc: { balance: amount } }
     );
     return this.winnerModel.create({ account: accountId, amount });
   }
