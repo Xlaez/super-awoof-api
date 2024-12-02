@@ -11,19 +11,27 @@ import {
   startOfYear,
 } from "date-fns";
 import { AlgoLevel } from "./system.enum";
+import { WalletService } from "../wallet/wallet.service";
 
 const MAX_WINNERS = 30;
 
 @InjectMongo("winnerModel", WinnerModel)
 export class SystemService extends DolphServiceHandler<Dolph> {
+  walletService: WalletService;
   winnerModel!: Pagination<IWinner>;
 
   constructor() {
     super("systemservice");
+    this.walletService = new WalletService();
   }
 
   async saveWinner(accountId: string, amount: number) {
     // await this.isEligibleToPlay(accountId);
+
+    await this.walletService.updateWallet(
+      { account: accountId },
+      { balance: { $inc: { balance: amount } } }
+    );
     return this.winnerModel.create({ account: accountId, amount });
   }
 

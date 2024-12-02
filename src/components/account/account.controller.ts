@@ -66,17 +66,18 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const body: VerifyAccountDto = req.body as VerifyAccountDto;
     const data = await this.AccountService.verifyAccount(body);
 
-    const { mno, paymentMethod } = await this.WalletService.createWallet({
-      account: data.account._id.toString(),
-      paymentMethod:
-        data.account.loginMode === LoginMode.phone ? "mno" : "paystack",
-    });
+    const { mno, paymentMethod, balance } =
+      await this.WalletService.createWallet({
+        account: data.account._id.toString(),
+        paymentMethod:
+          data.account.loginMode === LoginMode.phone ? "mno" : "paystack",
+      });
 
     SuccessResponse({
       res,
       body: {
         msg: "Account Verification Successful",
-        data: { ...data, mno, paymentMethod },
+        data: { ...data, mno, paymentMethod, balance },
       },
     });
   }
@@ -132,13 +133,13 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const data: LoginDto = req.body as LoginDto;
     const result = await this.AccountService.login(data);
 
-    const { mno, paymentMethod } = await this.WalletService.getWallet(
+    const { mno, paymentMethod, balance } = await this.WalletService.getWallet(
       result.account._id.toString()
     );
 
     SuccessResponse({
       res,
-      body: { ...result, mno, paymentMethod },
+      body: { ...result, mno, paymentMethod, balance },
     });
   }
 
@@ -149,13 +150,13 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     const data: VerifyOtpDto = req.body as VerifyOtpDto;
     const result = await this.AccountService.verifyOtp(data);
 
-    const { mno, paymentMethod } = await this.WalletService.getWallet(
+    const { mno, paymentMethod, balance } = await this.WalletService.getWallet(
       result.account._id.toString()
     );
 
     SuccessResponse({
       res,
-      body: { ...result, mno, paymentMethod },
+      body: { ...result, mno, paymentMethod, balance },
     });
   }
 
@@ -180,7 +181,7 @@ export class AccountController extends DolphControllerHandler<Dolph> {
       _id: req.payload.sub.toString(),
     });
 
-    const { mno, paymentMethod } = await this.WalletService.getWallet(
+    const { mno, paymentMethod, balance } = await this.WalletService.getWallet(
       profile._id.toString()
     );
 
@@ -190,6 +191,7 @@ export class AccountController extends DolphControllerHandler<Dolph> {
         ...sterilizeAccount(profile),
         mno,
         paymentMethod,
+        balance,
       },
     });
   }

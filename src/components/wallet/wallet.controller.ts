@@ -128,4 +128,13 @@ export class WalletController extends DolphControllerHandler<Dolph> {
 
     SuccessResponse({ res, body: result });
   }
+
+  @Get()
+  @TryCatchAsyncDec
+  async getWallet(req: DRequest, res: DResponse) {
+    const account: IAccount = req.payload.info;
+    const wallet = await this.WalletService.getWallet(account._id.toString());
+
+    SuccessResponse({ res, body: wallet });
+  }
 }
