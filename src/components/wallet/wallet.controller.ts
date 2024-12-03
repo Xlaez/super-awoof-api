@@ -65,7 +65,7 @@ export class WalletController extends DolphControllerHandler<Dolph> {
     const account: IAccount = req.payload.info;
     const body: WithdrawDto = req.body as WithdrawDto;
 
-    const wallet = await this.WalletService.getWallet(account.id);
+    const wallet = await this.WalletService.getWallet(account._id.toString());
 
     if (!wallet) throw new NotFoundException("User does not have a wallet.");
 
