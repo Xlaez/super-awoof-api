@@ -8,6 +8,7 @@ import {
   TryCatchAsyncDec,
   validateParamMiddleware,
   BadRequestException,
+  NotFoundException,
 } from "@dolphjs/dolph/common";
 import {
   Get,
@@ -65,6 +66,8 @@ export class WalletController extends DolphControllerHandler<Dolph> {
     const body: WithdrawDto = req.body as WithdrawDto;
 
     const wallet = await this.WalletService.getWallet(account.id);
+
+    if (!wallet) throw new NotFoundException("User does not have a wallet.");
 
     if (wallet.balance < body.amount)
       throw new BadRequestException(
