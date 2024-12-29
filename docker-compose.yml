@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  backend:
+    build: ./
+    container_name: super_awoof_backend
+    env_file:
+      - .env
+    ports:
+      - 8088:8088
