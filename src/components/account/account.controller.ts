@@ -47,6 +47,8 @@ export class AccountController extends DolphControllerHandler<Dolph> {
     });
   }
 
+  // /api/v1/account/mtn/callback
+
   @Post("register")
   @UseMiddleware(validateBodyMiddleware(CreateAccountDto))
   @TryCatchAsyncDec
