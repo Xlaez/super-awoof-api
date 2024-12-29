@@ -6,7 +6,7 @@ ARG NODE_ENV=production
 
 ENV NODE_ENV=${NODE_ENV}
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json yarn.lock ./
 
 RUN npm install --legacy-peer-deps --include=dev && npm install --global @dolphjs/cli && \
     npm cache clean --force && \
